@@ -1,0 +1,39 @@
+# Copy to config/config.yaml and adjust. Secrets are pulled from the
+# environment (see .env.example) via ${VAR_NAME} placeholders.
+
+source_name: front_door_camera
+
+video_source:
+  type: webcam # webcam | file | rtsp
+  webcam_index: 0
+  # file_path: /path/to/video.mp4
+  # rtsp_url: rtsp://user:pass@camera-ip:554/stream
+
+detection:
+  model_weights: yolov8n.pt # downloaded automatically by ultralytics on first run
+  confidence_threshold: 0.5
+  frame_skip: 5 # run detection every Nth frame
+
+alerts:
+  cooldown_seconds: 30 # minimum time between alerts for the same source
+
+  logging:
+    enabled: true
+
+  telegram:
+    enabled: false
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+
+  email:
+    enabled: false
+    smtp_host: smtp.gmail.com
+    smtp_port: 587
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from_addr: "${SMTP_USERNAME}"
+    to_addrs:
+      - you@example.com
+
+storage:
+  snapshot_dir: snapshots
