@@ -3,7 +3,12 @@
 Config files may reference environment variables with ``${VAR_NAME}``
 placeholders (typically for secrets such as bot tokens or SMTP
 credentials). Placeholders are resolved before YAML parsing, using a
-``.env`` file (if present) in addition to the process environment.
+``.env`` file (if present) in addition to the process environment. An
+unset variable resolves to an empty string rather than raising — a
+placeholder for a disabled alert channel (e.g. Telegram) is fine to
+leave unset. If the channel is enabled, the corresponding
+``@model_validator`` (e.g. ``TelegramConfig``) reports the missing field
+by name.
 """
 
 from __future__ import annotations
@@ -96,11 +101,7 @@ class AppConfig(BaseModel):
 
 def _resolve_env_vars(raw_text: str) -> str:
     def replace(match: re.Match[str]) -> str:
-        var_name = match.group(1)
-        value = os.environ.get(var_name)
-        if value is None:
-            raise ValueError(f"Config references undefined environment variable: {var_name}")
-        return value
+        return os.environ.get(match.group(1), "")
 
     return _ENV_VAR_PATTERN.sub(replace, raw_text)
 
