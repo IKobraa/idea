@@ -16,6 +16,9 @@ cp config/config.example.yaml config/config.yaml
 cp .env.example .env   # fill in Telegram/SMTP secrets if you enable those alerters
 
 homesec --config config/config.yaml
+
+# with a live preview window (boxes drawn around detected people, local display required)
+homesec --config config/config.yaml --show
 ```
 
 ## Development

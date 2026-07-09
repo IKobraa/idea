@@ -22,6 +22,11 @@ def main(argv: Sequence[str] | None = None) -> None:
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
     )
+    parser.add_argument(
+        "--show",
+        action="store_true",
+        help="Open a live preview window with detection boxes drawn (local display required)",
+    )
     args = parser.parse_args(argv)
 
     logging.basicConfig(
@@ -30,7 +35,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     )
 
     config = load_config(args.config)
-    pipeline = build_pipeline(config)
+    pipeline = build_pipeline(config, show_preview=args.show)
     try:
         pipeline.run()
     except KeyboardInterrupt:
