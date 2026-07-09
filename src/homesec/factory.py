@@ -11,6 +11,7 @@ from homesec.config import AlertsConfig, AppConfig, DetectionConfig
 from homesec.detection.detector import PersonDetector
 from homesec.detection.yolo_backend import YoloBackend
 from homesec.pipeline import DetectionPipeline
+from homesec.preview import PreviewWindow
 from homesec.storage import SnapshotStore
 from homesec.video_source import create_video_source
 
@@ -42,7 +43,7 @@ def build_alerters(config: AlertsConfig) -> list[Alerter]:
     return alerters
 
 
-def build_pipeline(config: AppConfig) -> DetectionPipeline:
+def build_pipeline(config: AppConfig, *, show_preview: bool = False) -> DetectionPipeline:
     return DetectionPipeline(
         source_name=config.source_name,
         video_source=create_video_source(config.video_source),
@@ -52,4 +53,5 @@ def build_pipeline(config: AppConfig) -> DetectionPipeline:
             build_alerters(config.alerts), cooldown_seconds=config.alerts.cooldown_seconds
         ),
         frame_skip=config.detection.frame_skip,
+        preview=PreviewWindow() if show_preview else None,
     )

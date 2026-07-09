@@ -28,6 +28,9 @@ ruff check . --fix
 # Run the app (requires config/config.yaml, copied from config.example.yaml)
 homesec --config config/config.yaml
 # equivalently: python -m homesec.cli --config config/config.yaml
+
+# with a live preview window (detection boxes drawn, requires a local display)
+homesec --config config/config.yaml --show
 ```
 
 There is no configured type checker or CI pipeline yet.
@@ -71,7 +74,12 @@ Key seams to know about when modifying behavior:
   the others.
 - **`pipeline.py`** — the run loop: pulls frames, applies `frame_skip` (detect every Nth frame
   for performance), saves a snapshot via `SnapshotStore` only when a person is detected, then
-  hands the event to the dispatcher.
+  hands the event to the dispatcher. When a `PreviewWindow` is passed in, every frame (not just
+  every Nth) is annotated with the most recent detections and shown via `cv2.imshow`.
+- **`preview.py`** — optional live debug window (`--show` flag), draws bounding boxes with
+  `cv2.rectangle`/`putText` and polls for `q`/Esc to let the user quit. Requires a real display
+  (GTK/Cocoa/X11); this is why the project depends on plain `opencv-python` rather than
+  `opencv-python-headless` — don't switch back without adding a display-optional code path first.
 - **`factory.py`** — the only place that turns `AppConfig` into wired-up objects
   (`build_detector`, `build_alerters`, `build_pipeline`). Add new alert channels or detection
   backends here, not in `cli.py`.
